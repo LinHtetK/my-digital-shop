@@ -12,23 +12,19 @@ export default async function DashboardPage() {
   return (
     <DashboardLayout title="User Dashboard">
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card className="hover:shadow-lg transition-shadow duration-200">
-            <CardContent>
-              <Typography variant="h6">Welcome</Typography>
-              <Typography variant="body1">{session.user.name}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        <Card className="hover:shadow-lg transition-shadow duration-200">
+          <CardContent>
+            <Typography variant="h6">Welcome</Typography>
+            <Typography variant="body1">{session.user.name}</Typography>
+          </CardContent>
+        </Card>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card className="hover:shadow-lg transition-shadow duration-200">
-            <CardContent>
-              <Typography variant="h6">Your Role</Typography>
-              <Typography variant="body1">{session.user.role}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        <Card className="hover:shadow-lg transition-shadow duration-200">
+          <CardContent>
+            <Typography variant="h6">Your Role</Typography>
+            <Typography variant="body1">{session.user.role}</Typography>
+          </CardContent>
+        </Card>
       </Grid>
     </DashboardLayout>
   );

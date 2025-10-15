@@ -30,10 +30,15 @@ export default function AuthForm({ mode }: AuthFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
+      const data = await res.json();
       if (!res.ok) throw new Error("Something went wrong");
 
-      router.push("/");
+      if (mode === "login") {
+        if (data.user.role === "ADMIN") router.push("/admin");
+        else router.push("/dashboard");
+      } else {
+        router.push("/login");
+      }
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message || "Failed to submit");
     } finally {
