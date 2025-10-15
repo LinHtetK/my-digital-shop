@@ -3,11 +3,19 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    const { token } = req.nextauth;
+    const token = req.nextauth.token;
 
+    // Admin page protection
     if (req.nextUrl.pathname.startsWith("/admin")) {
       if (token?.role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/", req.url));
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
+    }
+
+    // Dashboard page protection
+    if (req.nextUrl.pathname.startsWith("/dashboard")) {
+      if (!token) {
+        return NextResponse.redirect(new URL("/login", req.url));
       }
     }
   },
@@ -18,4 +26,6 @@ export default withAuth(
   }
 );
 
-export const config = { matcher: ["/dashboard/:path*", "/admin/:path*"] };
+export const config = {
+  matcher: ["/admin/:path*", "/dashboard/:path*"],
+};
