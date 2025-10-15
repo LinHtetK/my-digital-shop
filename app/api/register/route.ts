@@ -19,13 +19,16 @@ export async function POST(req: Request) {
 
     const hashed = await bcrypt.hash(password, 10);
     const userCount = await prisma.user.count();
-    const role = userCount === 0 ? "admin" : "user";
+    const role = userCount === 0 ? "ADMIN" : "USER";
 
     const user = await prisma.user.create({
       data: { name, email, password: hashed, role },
     });
 
-    return NextResponse.json({ user }, { status: 201 });
+    return NextResponse.json(
+      { message: "User created", user },
+      { status: 201 }
+    );
   } catch (err) {
     console.error("Register Error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
