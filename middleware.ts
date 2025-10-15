@@ -7,7 +7,7 @@ export default withAuth(
     const role = req.nextauth.token?.role;
 
     // 🔹 Admin page protection
-    if (pathname.startsWith("/admin") && role !== "admin") {
+    if (pathname.startsWith("/admin") && role !== "ADMIN") {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
 
