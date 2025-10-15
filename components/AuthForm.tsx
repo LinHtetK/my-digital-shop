@@ -34,8 +34,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
       if (!res.ok) throw new Error("Something went wrong");
 
       router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Failed to submit");
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message || "Failed to submit");
     } finally {
       setLoading(false);
     }
