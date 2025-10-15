@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TextField, Button, Typography, Box, Link } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -24,20 +25,39 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setError("");
 
     try {
-      const endpoint = mode === "register" ? "/api/register" : "/api/login";
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error("Something went wrong");
+      // const endpoint = mode === "register" ? "/api/register" : "/api/login";
+      // const res = await fetch(endpoint, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formData),
+      // });
+      // const data = await res.json();
+      // if (!res.ok) throw new Error("Something went wrong");
 
-      if (mode === "login") {
-        if (data.user.role === "ADMIN") router.push("/admin");
-        else router.push("/dashboard");
+      // if (mode === "login") {
+      //   console.log("test: ", data.user.role);
+      //   if (data.user.role === "ADMIN") router.push("/admin");
+      //   else router.push("/dashboard");
+      // } else {
+      //   router.push("/login");
+      // }
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("signIn res:", res);
+      if (!res || res.error) {
+        setError(res?.error || "Invalid login");
+        return;
+      }
+      const sessionRes = await fetch("/api/auth/session");
+      const sessionData = await sessionRes.json();
+      console.log("sessionData:", sessionData);
+      if (sessionData.user.role === "ADMIN") {
+        router.push("/admin");
       } else {
-        router.push("/login");
+        router.push("/dashboard");
       }
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message || "Failed to submit");

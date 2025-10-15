@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import LogoutButton from "./LogoutButton";
 
 interface Props {
   children: ReactNode;
@@ -11,6 +12,7 @@ export default function DashboardLayout({ children, title }: Props) {
       {/* Header */}
       <header className="bg-white shadow p-4 flex justify-between items-center">
         <h1 className="text-xl font-semibold">{title}</h1>
+        <LogoutButton />
       </header>
 
       {/* Main content */}
