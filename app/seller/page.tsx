@@ -1,7 +1,10 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
-import Link from "next/link";
+import DashboardLayout from "@/components/DashboardLayout";
+import Grid from "@mui/material/Grid";
+import { Typography, Card, CardContent, Button } from "@mui/material";
+import { prisma } from "@/lib/db";
 
 export default async function SellerDashboard() {
   const session = await getServerSession(authOptions);
@@ -10,18 +13,60 @@ export default async function SellerDashboard() {
   if (!user) redirect("/login");
   if (user.role !== "SELLER" || !user.isVerifiedSeller)
     redirect("/unauthorized");
-
+  const listings = await prisma.listing.findMany({
+    where: { sellerEmail: session.user.email as string },
+    orderBy: { createdAt: "desc" },
+  });
   return (
-    <div className="p-8">
-      {session?.user?.role === "SELLER" && session?.user?.isVerifiedSeller && (
-        <Link href="/seller" className="text-blue-600 font-medium">
-          Seller Dashboard
-        </Link>
-      )}
-      <h1 className="text-2xl font-semibold mb-4">Seller Dashboard</h1>
+    <DashboardLayout title="Seller Dashboard">
+      <Typography variant="h5" className="mb-4 font-semibold">
+        Your Listings
+      </Typography>
 
-      <p>Welcome back, {user.name}! 👋</p>
-      <p>You are a verified seller — manage your game accounts here.</p>
-    </div>
+      <Grid container spacing={4}>
+        {listings.length === 0 ? (
+          <Typography>No listings yet. Create one below!</Typography>
+        ) : (
+          listings.map((listing) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={listing.id}>
+              <Card className="hover:shadow-lg transition-shadow duration-200">
+                <CardContent>
+                  <Typography variant="h6">{listing.title}</Typography>
+                  <Typography variant="body2" className="text-gray-600">
+                    {listing.game}
+                  </Typography>
+                  <Typography variant="body1" className="font-semibold mt-2">
+                    ${listing.price}
+                  </Typography>
+                  <div className="flex justify-between mt-4">
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      href={`/seller/edit/${listing.id}`}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      color="error"
+                      href={`/seller/delete/${listing.id}`}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        )}
+      </Grid>
+
+      <div className="mt-6">
+        <Button variant="contained" color="primary" href="/seller/new">
+          ➕ Add New Listing
+        </Button>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -15,11 +15,11 @@ export default withAuth(
     if (pathname.startsWith("/dashboard") && !role) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
-    // if (pathname.startsWith("/seller")) {
-    //   if (token?.role !== "SELLER" || token?.isVerifiedSeller !== true) {
-    //     return NextResponse.redirect(new URL("/unauthorized", req.url));
-    //   }
-    // }
+    if (pathname.startsWith("/seller")) {
+      if (token?.role !== "SELLER" || token?.isVerifiedSeller !== true) {
+        return NextResponse.redirect(new URL("/unauthorized", req.url));
+      }
+    }
 
     return NextResponse.next();
   },
