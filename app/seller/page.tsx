@@ -2,11 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import DashboardLayout from "@/components/DashboardLayout";
-import Grid from "@mui/material/Grid";
-import { Typography, Card, CardContent, Button, Box } from "@mui/material";
 import { prisma } from "@/lib/db";
-import Link from "next/link";
-import { DeleteButton } from "@/components/DeleteButton";
 import SellerDashboardClient from "@/components/SellerDashboardClient";
 
 export default async function SellerDashboard() {
@@ -18,7 +14,7 @@ export default async function SellerDashboard() {
     redirect("/unauthorized");
 
   const listings = await prisma.listing.findMany({
-    where: { sellerEmail: session.user.email as string },
+    where: { sellerId: session.user.id as string },
     orderBy: { createdAt: "desc" },
   });
   console.log("listings : ", listings);

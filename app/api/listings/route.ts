@@ -22,13 +22,14 @@ export async function POST(req: Request) {
         { error: "Missing or invalid fields" },
         { status: 400 }
       );
+
     await prisma.listing.create({
       data: {
         title,
         description,
         price,
         game,
-        sellerEmail: user.email!,
+        sellerId: user.id!,
       },
     });
 

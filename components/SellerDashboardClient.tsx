@@ -101,7 +101,7 @@ export default function SellerDashboardClient({
                 </Typography>
 
                 <Box className="flex gap-2">
-                  <Link href={`/dashboard/seller/edit/${listing.id}`}>
+                  <Link href={`/seller/edit/${listing.id}`}>
                     <Button variant="contained" color="primary">
                       Edit
                     </Button>
