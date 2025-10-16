@@ -7,6 +7,7 @@ import { Typography, Card, CardContent, Button, Box } from "@mui/material";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { DeleteButton } from "@/components/DeleteButton";
+import SellerDashboardClient from "@/components/SellerDashboardClient";
 
 export default async function SellerDashboard() {
   const session = await getServerSession(authOptions);
@@ -24,7 +25,7 @@ export default async function SellerDashboard() {
 
   return (
     <DashboardLayout title="Seller Dashboard">
-      <Box className="p-8">
+      {/* <Box className="p-8">
         <Box className="flex justify-between items-center mb-6">
           <Typography variant="h4" fontWeight="bold">
             Your Listings
@@ -75,7 +76,8 @@ export default async function SellerDashboard() {
             ))}
           </Grid>
         )}
-      </Box>
+      </Box> */}
+      <SellerDashboardClient listings={listings} />
     </DashboardLayout>
   );
 }
