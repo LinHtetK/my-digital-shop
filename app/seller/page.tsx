@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import Grid from "@mui/material/Grid";
-import { Typography, Card, CardContent, Button } from "@mui/material";
+import { Typography, Card, CardContent, Button, Box } from "@mui/material";
 import { prisma } from "@/lib/db";
+import Link from "next/link";
+import { DeleteButton } from "@/components/DeleteButton";
 
 export default async function SellerDashboard() {
   const session = await getServerSession(authOptions);
@@ -13,60 +15,67 @@ export default async function SellerDashboard() {
   if (!user) redirect("/login");
   if (user.role !== "SELLER" || !user.isVerifiedSeller)
     redirect("/unauthorized");
+
   const listings = await prisma.listing.findMany({
     where: { sellerEmail: session.user.email as string },
     orderBy: { createdAt: "desc" },
   });
+  console.log("listings : ", listings);
+
   return (
     <DashboardLayout title="Seller Dashboard">
-      <Typography variant="h5" className="mb-4 font-semibold">
-        Your Listings
-      </Typography>
+      <Box className="p-8">
+        <Box className="flex justify-between items-center mb-6">
+          <Typography variant="h4" fontWeight="bold">
+            Your Listings
+          </Typography>
+          <Link href="/seller/new">
+            <Button variant="contained" color="primary">
+              Add New Listing
+            </Button>
+          </Link>
+        </Box>
 
-      <Grid container spacing={4}>
         {listings.length === 0 ? (
-          <Typography>No listings yet. Create one below!</Typography>
+          <Typography>No listings yet.</Typography>
         ) : (
-          listings.map((listing) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={listing.id}>
-              <Card className="hover:shadow-lg transition-shadow duration-200">
-                <CardContent>
-                  <Typography variant="h6">{listing.title}</Typography>
-                  <Typography variant="body2" className="text-gray-600">
-                    {listing.game}
-                  </Typography>
-                  <Typography variant="body1" className="font-semibold mt-2">
-                    ${listing.price}
-                  </Typography>
-                  <div className="flex justify-between mt-4">
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      href={`/seller/edit/${listing.id}`}
+          <Grid container spacing={3}>
+            {listings.map((listing) => (
+              <Grid key={listing.id} size={{ xs: 12, sm: 6, md: 4 }}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" fontWeight="bold">
+                      {listing.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {listing.description}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      className="mt-2 font-semibold"
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      color="error"
-                      href={`/seller/delete/${listing.id}`}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))
-        )}
-      </Grid>
+                      ${listing.price}
+                    </Typography>
 
-      <div className="mt-6">
-        <Button variant="contained" color="primary" href="/seller/new">
-          ➕ Add New Listing
-        </Button>
-      </div>
+                    <Box className="flex gap-2 mt-4">
+                      <Link href={`/seller/edit/${listing.id}`}>
+                        <Button variant="outlined">Edit</Button>
+                      </Link>
+                      <form
+                        action={`/api/listings/${listing.id}`}
+                        method="POST"
+                      >
+                        <input type="hidden" name="_method" value="DELETE" />
+                        <DeleteButton id={listing.id} />
+                      </form>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
     </DashboardLayout>
   );
 }
