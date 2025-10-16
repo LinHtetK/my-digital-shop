@@ -35,29 +35,43 @@ export default function AuthForm({ mode }: AuthFormProps) {
       // if (!res.ok) throw new Error("Something went wrong");
 
       // if (mode === "login") {
-      //   console.log("test: ", data.user.role);
       //   if (data.user.role === "ADMIN") router.push("/admin");
       //   else router.push("/dashboard");
       // } else {
       //   router.push("/login");
       // }
-      const res = await signIn("credentials", {
-        redirect: false,
-        email: formData.email,
-        password: formData.password,
-      });
-      console.log("signIn res:", res);
-      if (!res || res.error) {
-        setError(res?.error || "Invalid login");
-        return;
-      }
-      const sessionRes = await fetch("/api/auth/session");
-      const sessionData = await sessionRes.json();
-      console.log("sessionData:", sessionData);
-      if (sessionData.user.role === "ADMIN") {
-        router.push("/admin");
-      } else {
+      if (mode === "register") {
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Something went wrong");
         router.push("/dashboard");
+        return;
+      } else {
+        const res = await signIn("credentials", {
+          redirect: false,
+          email: formData.email,
+          password: formData.password,
+        });
+        if (!res || res.error) {
+          setError(res?.error || "Invalid login");
+          return;
+        }
+        const sessionRes = await fetch("/api/auth/session");
+        const sessionData = await sessionRes.json();
+        if (sessionData.user.role === "ADMIN") {
+          router.push("/admin");
+        } else if (
+          sessionData.user.role === "SELLER" &&
+          sessionData.user.isVerifiedSeller
+        ) {
+          router.push("/seller");
+        } else {
+          router.push("/dashboard");
+        }
       }
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message || "Failed to submit");

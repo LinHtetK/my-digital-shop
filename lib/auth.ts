@@ -33,12 +33,17 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.role = (user as User).role;
+      if (user) {
+        token.role = (user as User).role;
+        token.isVerifiedSeller = (user as User).isVerifiedSeller;
+      }
+
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.role = token.role;
+        session.user.isVerifiedSeller = token.isVerifiedSeller;
       }
       return session;
     },
