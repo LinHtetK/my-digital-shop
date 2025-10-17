@@ -17,6 +17,7 @@
     "bcryptjs": "^3.0.2",
     "next": "15.5.5",
     "next-auth": "^4.24.11",
+    "nodemailer": "^6.10.1",
     "prisma": "^6.17.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/recharts": "^1.8.29",
