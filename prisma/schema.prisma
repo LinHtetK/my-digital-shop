@@ -35,6 +35,7 @@ model Listing {
   description String?
   sellerId    String
   approved    Boolean @default(false)
+  status      String  @default("PENDING") 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isArchived  Boolean  @default(false)
