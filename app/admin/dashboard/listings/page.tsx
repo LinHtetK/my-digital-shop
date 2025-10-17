@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import AdminListingsClient from "@/components/AdminListingsClient";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default async function AdminListingsPage() {
   const session = await getServerSession(authOptions);
@@ -16,5 +17,9 @@ export default async function AdminListingsPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  return <AdminListingsClient listings={listings} />;
+  return (
+    <DashboardLayout title="Admin Listings Management">
+      <AdminListingsClient listings={listings} />
+    </DashboardLayout>
+  );
 }
