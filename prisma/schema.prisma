@@ -25,6 +25,7 @@ model User {
   updatedAt DateTime @updatedAt
   isArchived Boolean  @default(false)
   listings  Listing[]
+  orders    Order[]
 }
 
 model Listing {
@@ -40,8 +41,50 @@ model Listing {
   updatedAt   DateTime @updatedAt
   isArchived  Boolean  @default(false)
   seller User @relation(fields: [sellerId], references: [id])
+  orders Order[]
 }
 
+model Order {
+  id             String    @id @default(cuid())
+  buyerId        String
+  listingId      String
+  amount         Float
+  currency       String    @default("USD")
+  paymentMethod  String?
+  paymentStatus  PaymentStatus @default(PENDING)
+  deliveryStatus DeliveryStatus @default(PENDING)
+  status         OrderStatus    @default(CREATED) 
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  // optional metadata (e.g. provider transaction id)
+  paymentProvider String? 
+  providerData    Json?
+  buyer   User    @relation(fields: [buyerId], references: [id])
+  listing Listing @relation(fields: [listingId], references: [id])
+  @@index([buyerId])
+  @@index([listingId])
+}
+
+enum OrderStatus {
+  CREATED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum DeliveryStatus {
+  PENDING
+  IN_PROGRESS
+  DELIVERED
+  FAILED
+}
 
 enum Role {
   USER
